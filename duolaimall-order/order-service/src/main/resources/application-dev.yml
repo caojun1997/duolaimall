@@ -1,0 +1,54 @@
+spring:
+  application:
+    name: duolai-order
+  cloud:
+    inetutils:
+    preferred-networks: 192.168.1
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+        ip: 192.168.7.83
+  main:
+    allow-bean-definition-overriding: true
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3386/csmall?useUnicode=true&characterEncoding=utf8&useOldAliasMetadataBehavior=true&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&serverTimezone=UTC
+    username: root
+    password: 1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+    initialSize: 2
+    minIdle: 1
+    maxActive: 20
+    maxWait: 60000
+    timeBetweenEvictionRunsMillis: 300000
+    validationQuery: SELECT 1 FROM DUAL
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: false
+    maxPoolPreparedStatementPerConnectionSize: 20
+    filters: stat,config
+    connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=500
+    useGlobalDataSourceStat: true
+  redisson:
+      address: 127.0.0.1:6379
+      timeout: 3000
+      database: 0
+      pool:
+        max-active: 20
+        max-idle: 10
+        max-wait: 3000
+        min-idle: 2
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+    serialization:
+      write-dates-as-timestamps: false
+
+logging:
+  config:
+    classpath: logback.xml
+  level:
+    com:
+      evan:
+        dao: DEBUG
