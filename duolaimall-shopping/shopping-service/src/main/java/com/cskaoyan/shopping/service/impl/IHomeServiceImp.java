@@ -22,6 +22,7 @@ import tk.mybatis.mapper.util.Sqls;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -48,7 +49,7 @@ public class IHomeServiceImp implements IHomeService {
      */
     @Override
     public HomePageResponse homepage() {
-        HashSet<PanelDto> panelDtos = new HashSet<>();
+        LinkedList<PanelDto> panelDtos = new LinkedList<>();
         List<Panel> panels = panelMapper.selectAll();
         for (Panel panel : panels) {
             Sqls.Criteria criteria = new Sqls.Criteria();
@@ -57,15 +58,23 @@ public class IHomeServiceImp implements IHomeService {
             List<PanelContent> panelContents = panelContentMapper.selectByExample(example);
             List<PanelContentItem> panelContentItemsList = new ArrayList<>();
             for (PanelContent panelContent : panelContents) {
+                if (panelContent.getPanelId() == null) {
+                    continue;
+                }
                 PanelContentItem panelContentItem = contentConverter.panelContent2DPanelContentItem(panelContent);
+                if (panelContentItem == null) continue;
                 Item item = itemMapper.selectByPrimaryKey(panelContent.getProductId());
-                panelContentItem = contentConverter.Item2DPanelContentItem(item);
+                if (item==null)continue;
+                panelContentItem.setSubTitle(item.getSellPoint());
+                panelContentItem.setSalePrice(item.getPrice());
+                panelContentItem.setProductName(item.getTitle());
+                //  panelContentItem = contentConverter.Item2DPanelContentItem(item);
                 panelContentItemsList.add(panelContentItem);
             }
             List<PanelContentItemDto> panelContentItemDtos = contentConverter.panelContentItem2Dto(panelContentItemsList);
             PanelDto panelDto = contentConverter.panel2Dto(panel);
             panelDto.setPanelContentItems(panelContentItemDtos);
-            panelDtos.add(panelDto);
+            panelDtos.add(0,panelDto);
         }
         HomePageResponse homePageResponse = new HomePageResponse();
         homePageResponse.setPanelContentItemDtos(panelDtos);

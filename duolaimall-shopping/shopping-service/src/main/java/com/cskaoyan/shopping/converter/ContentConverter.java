@@ -23,6 +23,8 @@ public interface ContentConverter {
     @Mappings({})
     PanelContentDto panelContentItem2Dto(PanelContentItem panelContentItem);
 
+    PanelContentItemDto panelContentItem2PanelContentItemDto(PanelContentItem panelContentItem);
+
     @Mappings({})
     PanelContentItem panelContent2DPanelContentItem(PanelContent panelContent);
 
