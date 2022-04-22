@@ -1,0 +1,108 @@
+package com.cskaoyan.order.utils;
+
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.FastDateFormat;
+import org.redisson.RedissonScript;
+import org.redisson.api.RScript;
+import org.redisson.api.RedissonClient;
+import org.redisson.codec.JsonJacksonCodec;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+
+@Slf4j
+@Component
+public class GlobalIdGeneratorUtil {
+
+
+    // 时间精确到毫秒
+    private static final FastDateFormat seqDateFormat = FastDateFormat.getInstance("yyMMddHHmmssSSS");
+
+    @Autowired
+    RedissonClient redissonClient;
+
+    private String keyName;
+
+    private int incrby;
+
+    private String sha1;
+
+    /**
+     *    这里发号器的实现逻辑:
+     *    keys: keyname, 增量(incrby), 15位精确到毫秒的时间字符串(yyMMddHHmmssSSS) + 随机生成的2为数的随机字符串
+     *    keys作为 get_max_seq 方法的执行参数
+     *    1. 先将keyname作为key，尝试设置给key对应的value为我们生成的随机字符串的值
+     *    2. 如果1成功，则设置其过期时间为1个月，并返回我们客户端计算出的随机字符串
+     *    3. 如果1失败，说明keyname重复，已经存在，则取出该已经存储的keyname对应的value，比较时间大小
+     *    4. 如果keyname对饮的的时间大于，seq值的时间，那么直接设置该keyname的值，为客户端计算出的随机字符串的值，并最为结果返回
+     *    5. 如果keyname对应的时间小于等于，seq值的时间，那么将keyname对应随机值按照指定增量增加一次，并返回
+     */
+
+    private String luaScript = "local function get_max_seq()\n" +
+            "    local key = tostring(KEYS[1])\n" +
+            "    local incr_amoutt = tonumber(KEYS[2])\n" +
+            "    local seq = tostring(KEYS[3])\n" +
+            "    local month_in_seconds = 24 * 60 * 60 * 30\n" +
+            "    if (1 == redis.call('setnx', key, seq))\n" +
+            "    then\n" +
+            "        redis.call('expire', key, month_in_seconds)\n" +
+            "        return seq\n" +
+            "    else\n" +
+            "        local prev_seq = redis.call('get', key)\n" +
+            "        if (prev_seq < seq)\n" +
+            "        then\n" +
+            "            redis.call('set', key, seq)\n" +
+            "            return seq\n" +
+            "        else\n" +
+            "            redis.call('incrby', key, incr_amoutt)\n" +
+            "            return redis.call('get', key)\n" +
+            "        end\n" +
+            "    end\n" +
+            "end\n" +
+            "return get_max_seq()";
+
+    public GlobalIdGeneratorUtil() throws IOException {
+
+    }
+
+    @PostConstruct
+    private void init() throws Exception {
+        sha1 = redissonClient.getScript().scriptLoad(luaScript);
+    }
+
+    public String getNextSeq(String keyName, int incrby) {
+        if (StringUtils.isBlank(keyName) || incrby < 0) {
+            throw new RuntimeException("参数不正确");
+        }
+        this.keyName = keyName;
+        this.incrby = incrby;
+        try {
+            return getMaxSeq();
+        } catch (Exception e) {//如果redis出现故障，则采用uuid
+            e.printStackTrace();
+            return UUID.randomUUID().toString().replace("-", "");
+        }
+    }
+
+    private String generateSeq() {
+        String seqDate = seqDateFormat.format(System.currentTimeMillis());
+        String candidateSeq = new StringBuilder(17).append(seqDate).append(RandomStringUtils.randomNumeric(2)).toString();
+        return candidateSeq;
+    }
+
+    public String getMaxSeq() throws ExecutionException, InterruptedException {
+        List<Object> keys = Arrays.asList(keyName, incrby, generateSeq());
+        RedissonScript rScript = (RedissonScript) redissonClient.getScript();
+        //这里遇到一个bug，默认情况下使用evalSha，不加Codec属性时，会报错。这个错误很神奇。花了3个小时才搞定。
+        Long seqNext = rScript.evalSha(RScript.Mode.READ_ONLY, JsonJacksonCodec.INSTANCE, sha1, RScript.ReturnType.VALUE, keys);
+        return seqNext.toString();
+    }
+}
