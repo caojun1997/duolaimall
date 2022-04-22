@@ -19,6 +19,8 @@ public class ShoppingController {
     IHomeService iHomeService;
     @Autowired
     IContentService iContentService;
+    @Autowired
+
     /**
      * cao jun
      * 2022年4月22日16:57:20
@@ -32,12 +34,13 @@ public class ShoppingController {
         }
         return new ResponseUtil().setErrorMsg(homePageResponse.getMsg());
     }
+
     /**
      * cao jun
      * 2022年4月22日23:32:37
      */
     @GetMapping("navigation")
-    public ResponseData navigation(){
+    public ResponseData navigation() {
 
         NavListResponse navResponse = iContentService.queryNavList();
         if (ShoppingRetCode.SUCCESS.getCode().equals(navResponse.getCode())) {
@@ -46,4 +49,11 @@ public class ShoppingController {
         return new ResponseUtil().setErrorMsg(navResponse.getMsg());
     }
 
+    @GetMapping("categories")
+    public ResponseData categories() {
+
+
+
+        return null;
+    }
 }
