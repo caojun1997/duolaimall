@@ -13,13 +13,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class ProductServiceImpl implements ProductService {
 
-    @Autowired
-    IProductService iProductService;
+//    @Autowired
+//    IProductService iProductService;
 
     @PostMapping(value = "/rpc/detail")
     @Override
     public ProductDetailResponse getProductDetail(ProductDetailRequest request) {
-        return iProductService.getProductDetail(request);
+        return null;
+       // return iProductService.getProductDetail(request);
     }
 
     @GetMapping("/rpc/items")
