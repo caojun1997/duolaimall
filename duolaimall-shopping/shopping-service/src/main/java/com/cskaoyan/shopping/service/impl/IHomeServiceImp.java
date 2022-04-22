@@ -82,4 +82,5 @@ public class IHomeServiceImp implements IHomeService {
         homePageResponse.setMsg(ShoppingRetCode.SUCCESS.getMessage());
         return homePageResponse;
     }
+
 }

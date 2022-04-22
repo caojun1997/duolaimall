@@ -20,10 +20,16 @@ public interface ContentConverter {
     @Mappings({})
     PanelContentDto panelContent2Dto(PanelContent panelContent);
 
+    List<PanelContentDto> panelContentList2Dto(List<PanelContent> panelContent);
+
     @Mappings({})
     PanelContentDto panelContentItem2Dto(PanelContentItem panelContentItem);
 
     PanelContentItemDto panelContentItem2PanelContentItemDto(PanelContentItem panelContentItem);
+
+    List<PanelContentItemDto> panelContentItem2Dto(List<PanelContentItem> panelContentItems);
+
+
 
     @Mappings({})
     PanelContentItem panelContent2DPanelContentItem(PanelContent panelContent);
@@ -37,7 +43,6 @@ public interface ContentConverter {
 
     List<PanelContentDto> panelContents2Dto(List<PanelContent> panelContents);
 
-    List<PanelContentItemDto> panelContentItem2Dto(List<PanelContentItem> panelContentItems);
 
     // panelContentDto转换成PanelContentItemDto
     PanelContentItemDto panelContent2ContentDto(PanelContentDto panelContent);
