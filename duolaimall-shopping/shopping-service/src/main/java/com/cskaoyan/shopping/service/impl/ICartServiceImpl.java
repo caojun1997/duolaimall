@@ -21,6 +21,7 @@ import org.redisson.config.Config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 @Service
@@ -55,6 +56,7 @@ public class ICartServiceImpl implements ICartService {
 
         RMap<String,CartProductDto> map =redissonClient.getMap("SuiBian");
 
+        // ArrayList<Object> objects = new ArrayList<>(map.values());
         map.put(String.valueOf(item.getId()),cartProductDto);
         map.put(request.getUserId().toString(),cartProductDto);
         AddCartResponse addCartResponse = new AddCartResponse();

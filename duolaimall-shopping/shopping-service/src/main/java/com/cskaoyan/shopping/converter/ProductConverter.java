@@ -4,6 +4,7 @@ import com.cskaoyan.mall.dto.ItemDto;
 import com.cskaoyan.shopping.dal.entitys.Item;
 import com.cskaoyan.mall.dto.ProductDto;
 import com.cskaoyan.shopping.dal.entitys.ItemCat;
+import com.cskaoyan.shopping.dto.CartProducTimetDto;
 import com.cskaoyan.shopping.dto.CartProductDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -28,5 +29,10 @@ public interface ProductConverter {
     ItemDto item2ItemDto(Item item);
 
     List<ItemDto> items2ItemDtos(List<Item> items);
+
+    // 购物车功能
+    CartProductDto cartProductDto2Time(CartProducTimetDto cartProducTimetDto);
+
+    CartProducTimetDto cartProductTime2Dto(CartProductDto cartProductDto);
 
 }
