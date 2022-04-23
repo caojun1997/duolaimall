@@ -7,9 +7,9 @@ spring:
     nacos:
       discovery:
         server-addr: 127.0.0.1:8848
-        ip: 192.168.7.31
+        ip: 192.168.2.5
   datasource:
-    url: jdbc:mysql://192.168.7.31:3306/project3?useUnicode=true&characterEncoding=utf8&useOldAliasMetadataBehavior=true&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&serverTimezone=UTC
+    url: jdbc:mysql://192.168.2.5:3306/project3?useUnicode=true&characterEncoding=utf8&useOldAliasMetadataBehavior=true&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&serverTimezone=UTC
     username: root
     password: 123456
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -29,7 +29,7 @@ spring:
 #    connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=500
 #    useGlobalDataSourceStat: true
   redisson:
-    address: 192.168.7.31:6379
+    address: 192.168.2.5:6379
     timeout: 3000
     database: 0
     pool:
@@ -40,8 +40,8 @@ spring:
   mail:
     host: smtp.qq.com
     port: 25
-    username: 1132045742@qq.com
-    password: ydcexaypuieciijg
+    username: op027@qq.com
+    password: zmrwwlmppqsqebjd
 
 email:
   text: http://localhost:${server.port}/user/verify?username=%s&uuid=%s

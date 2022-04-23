@@ -27,6 +27,8 @@ public enum UserRetCode {
     DB_EXCEPTION                        ("003097", "数据库异常"),
     SYSTEM_TIMEOUT                      ("003098", "系统超时"),
     SYSTEM_ERROR                        ("003099", "系统错误"),
+    EMAIL_ALREADY_EXISTS                ("003100", "邮箱已经存在"),
+
 
     USERVERIFY_INFOR_INVALID            ("003200", "用户注册验证验证信息不合法");
 

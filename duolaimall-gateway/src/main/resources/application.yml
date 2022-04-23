@@ -11,7 +11,7 @@ spring:
     nacos:
       discovery:
         server-addr: 127.0.0.1:8848
-        ip: 192.168.7.31
+        ip: 192.168.2.5
     gateway:
       routes:
         - id: duolai-order
