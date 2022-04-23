@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("user")
 public class CaptchaController {
 
     @Autowired
@@ -24,9 +24,11 @@ public class CaptchaController {
     /**
      * 获取验证码
      */
-    @GetMapping("/kaptcha")
+    @GetMapping("kaptcha")
     public ResponseData getKaptchaCode(HttpServletResponse response) {
         KaptchaCodeRequest kaptchaCodeRequest=new KaptchaCodeRequest();
+
+
         KaptchaCodeResponse kaptchaCodeResponse=kaptchaService.getKaptchaCode(kaptchaCodeRequest);
         if(kaptchaCodeResponse.getCode().equals(UserRetCode.SUCCESS.getCode())){
             Cookie cookie= CookieUtil.genCookie("kaptcha_uuid",kaptchaCodeResponse.getUuid(),"/",60);
