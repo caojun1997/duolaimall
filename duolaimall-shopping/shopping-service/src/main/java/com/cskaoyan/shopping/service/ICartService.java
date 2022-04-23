@@ -9,10 +9,9 @@ public interface ICartService {
 
     /**
      * 获得购物车商品列表
-     * @param request
      * @return
      */
-    CartListByIdResponse getCartListById(CartListByIdRequest request);
+    CartListByIdResponse getCartListById();
 
     /**
      * 添加商品到购物车

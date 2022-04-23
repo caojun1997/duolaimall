@@ -27,7 +27,6 @@ public class ShoppingController {
     @Autowired
     IContentService iContentService;
 
-
     @Autowired
     IProductService iProductService;
 
@@ -36,6 +35,21 @@ public class ShoppingController {
 
 
 
+
+
+    /**
+     * @author zwy
+     * @date 2022/4/23 17:45
+     */
+    @GetMapping("carts")
+    public ResponseData addToCarts() {
+        CartListByIdResponse cartListByIdResponse = icartService.getCartListById();
+        if (ShoppingRetCode.SUCCESS.getCode().equals(cartListByIdResponse.getCode())) {
+            return new ResponseUtil().setData(cartListByIdResponse.getCartProductDtos());
+        }
+        return new ResponseUtil().setErrorMsg(cartListByIdResponse.getMsg());
+
+    }
 
 
     /**
@@ -86,15 +100,6 @@ public class ShoppingController {
     }
 
 
-    @PostMapping("carts")
-    public ResponseData addToCarts(@RequestBody AddCartRequest request) {
-        AddCartResponse addCartResponse = icartService.addToCart(request);
-        if (ShoppingRetCode.SUCCESS.getCode().equals(addCartResponse.getCode())) {
-            return new ResponseUtil().setData(addCartResponse.getAddCartResultItemDtos());
-        }
-        return new ResponseUtil().setErrorMsg(addCartResponse.getMsg());
-
-    }
 
 
     /**
