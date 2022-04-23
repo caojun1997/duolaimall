@@ -6,7 +6,7 @@ import com.cskaoyan.shopping.dto.CartProductDto;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
 
-@Component
+
 public class CartItemConverter {
 
 

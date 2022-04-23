@@ -6,13 +6,10 @@ import com.cskaoyan.mall.constant.ShoppingRetCode;
 import com.cskaoyan.mall.dto.ProductDetailRequest;
 import com.cskaoyan.mall.dto.ProductDetailResponse;
 import com.cskaoyan.shopping.dto.*;
-import com.cskaoyan.shopping.service.ICartService;
-import com.cskaoyan.shopping.service.IContentService;
+import com.cskaoyan.shopping.service.*;
 import com.cskaoyan.shopping.dto.AddCartRequest;
 import com.cskaoyan.shopping.dto.AddCartResponse;
 import com.cskaoyan.shopping.dto.HomePageResponse;
-import com.cskaoyan.shopping.service.IHomeService;
-import com.cskaoyan.shopping.service.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,6 +30,12 @@ public class ShoppingController {
 
     @Autowired
     IProductService iProductService;
+
+    @Autowired
+    IProductCateService iProductCateService;
+
+
+
 
 
     /**
@@ -112,11 +115,16 @@ public class ShoppingController {
     /**
      * cao jun
      * 2022年4月23日09:03:03
+     * 商品分类信息
      */
     @GetMapping("categories")
-    public ResponseData categories() {
+    public ResponseData categories(AllProductCateRequest allProductCateRequest) {
+        AllProductCateResponse allProductCateResponse=iProductCateService.getAllProductCate(allProductCateRequest);
+        if (ShoppingRetCode.SUCCESS.getCode().equals(allProductCateResponse.getCode())){
+            return new ResponseUtil().setData(allProductCateResponse.getProductCateDtoList());
+        }
 
-        return null;
+        return new ResponseUtil().setErrorMsg(allProductCateResponse.getMsg());
     }
 
     /**
