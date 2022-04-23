@@ -3,15 +3,15 @@ package com.cskaoyan.shopping.controller;
 import com.cskaoyan.mall.commons.result.ResponseData;
 import com.cskaoyan.mall.commons.result.ResponseUtil;
 import com.cskaoyan.mall.constant.ShoppingRetCode;
+import com.cskaoyan.mall.dto.ProductDetailRequest;
+import com.cskaoyan.mall.dto.ProductDetailResponse;
 import com.cskaoyan.shopping.dto.*;
 import com.cskaoyan.shopping.service.ICartService;
 import com.cskaoyan.shopping.service.IContentService;
 import com.cskaoyan.shopping.service.IHomeService;
+import com.cskaoyan.shopping.service.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -22,8 +22,59 @@ public class ShoppingController {
     IHomeService iHomeService;
     @Autowired
     IContentService iContentService;
-
     @Autowired
+    IProductService iProductService;
+
+
+    /**
+     * @author zwy
+     * @date 2022/4/22 19:41
+     */
+    @GetMapping("/shopping/product/{id}")
+    public ResponseData getProductDetail(@PathVariable("id") Long productId) {//@PathVariable注解 接收请求参数中占位符的值
+        ProductDetailRequest request = new ProductDetailRequest();
+        request.setId(productId);
+        ProductDetailResponse productDetail = iProductService.getProductDetail(request);
+
+        if (ShoppingRetCode.SUCCESS.getCode().equals(productDetail.getCode())) {
+            return new ResponseUtil().setData(productDetail.getProductDetailDto());
+        }
+        return new ResponseUtil().setErrorMsg(productDetail.getMsg());
+    }
+
+
+    /**
+     * @author zwy
+     * @date 2022/4/22 22:30
+     */
+    @GetMapping("/shopping/recommend")
+    public ResponseData getRecommendGoods() {
+
+        RecommendResponse recommendResponse = iProductService.getRecommendGoods();
+
+        if (ShoppingRetCode.SUCCESS.getCode().equals(recommendResponse.getCode())) {
+            return new ResponseUtil().setData(recommendResponse.getPanelFinalDtos());
+        }
+        return new ResponseUtil().setErrorMsg(recommendResponse.getMsg());
+    }
+
+
+    /**
+     * @author zwy
+     * @date 2022/4/23 10:34
+     */
+    @GetMapping("/shopping/goods")
+    public ResponseData getAllProduct(AllProductRequest request) {
+
+        AllProductResponse allProductResponse = iProductService.getAllProduct(request);
+
+        if (ShoppingRetCode.SUCCESS.getCode().equals(allProductResponse.getCode())) {
+            new ResponseUtil().setData(allProductResponse);
+
+        }
+        return new ResponseUtil().setErrorMsg(allProductResponse.getMsg());
+    }
+
 
     /**
      * cao jun
