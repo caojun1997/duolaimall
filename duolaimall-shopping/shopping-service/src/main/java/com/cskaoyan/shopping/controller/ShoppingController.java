@@ -3,14 +3,17 @@ package com.cskaoyan.shopping.controller;
 import com.cskaoyan.mall.commons.result.ResponseData;
 import com.cskaoyan.mall.commons.result.ResponseUtil;
 import com.cskaoyan.mall.constant.ShoppingRetCode;
-import com.cskaoyan.shopping.dto.HomePageResponse;
-import com.cskaoyan.shopping.dto.NavListResponse;
+import com.cskaoyan.shopping.dto.*;
+import com.cskaoyan.shopping.service.ICartService;
 import com.cskaoyan.shopping.service.IContentService;
 import com.cskaoyan.shopping.service.IHomeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("shopping")
@@ -19,6 +22,7 @@ public class ShoppingController {
     IHomeService iHomeService;
     @Autowired
     IContentService iContentService;
+
     @Autowired
 
     /**
@@ -49,9 +53,57 @@ public class ShoppingController {
         return new ResponseUtil().setErrorMsg(navResponse.getMsg());
     }
 
+    /**
+     * cao jun
+     * 2022年4月23日09:03:03
+     */
     @GetMapping("categories")
     public ResponseData categories() {
 
+        return null;
+    }
+
+
+    @Autowired
+    ICartService iCartService;
+
+    /**
+     * cao jun
+     * 2022年4月23日09:03:25
+     */
+    @GetMapping("cart")
+    public ResponseData cart(@RequestBody Map param) {
+
+        Integer userId = (Integer) param.get("userId");
+        Integer productNum = (Integer) param.get("productNum");
+        Integer productId = (Integer) param.get("productId");
+        Integer checked = (Integer) param.get("checked");
+        if (userId != null && productId != null && productNum != null && checked != null) {
+            // 更新购物车商品
+            UpdateCartNumRequest updateCartNumRequest = new UpdateCartNumRequest();
+            iCartService.updateCartNum(updateCartNumRequest);
+
+        }
+        if (userId != null && productId != null && productNum != null && checked == null) {
+            // 加入购物车
+            AddCartRequest addCartRequest = new AddCartRequest();
+            addCartRequest.setUserId(Long.valueOf(userId));
+            addCartRequest.setItemId(Long.valueOf(productId));
+            addCartRequest.setNum(productNum);
+            AddCartResponse addCartResponse = iCartService.addToCart(addCartRequest);
+
+
+        }
+        if (userId != null && productId == null && productNum == null && checked == null) {
+            // 获得购物车商品列表
+            CartListByIdRequest cartListByIdRequest = new CartListByIdRequest();
+            cartListByIdRequest.setUserId(Long.valueOf(userId));
+            CartListByIdResponse cartListByIdResponse = iCartService.getCartListById(cartListByIdRequest);
+            if (ShoppingRetCode.SUCCESS.getCode().equals(cartListByIdResponse.getCode())){
+
+            }
+
+        }
 
 
         return null;
