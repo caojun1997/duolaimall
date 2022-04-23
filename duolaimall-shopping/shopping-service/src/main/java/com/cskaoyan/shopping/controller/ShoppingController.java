@@ -8,6 +8,10 @@ import com.cskaoyan.mall.dto.ProductDetailResponse;
 import com.cskaoyan.shopping.dto.*;
 import com.cskaoyan.shopping.service.ICartService;
 import com.cskaoyan.shopping.service.IContentService;
+import com.cskaoyan.shopping.dto.AddCartRequest;
+import com.cskaoyan.shopping.dto.AddCartResponse;
+import com.cskaoyan.shopping.dto.HomePageResponse;
+import com.cskaoyan.shopping.service.ICartService;
 import com.cskaoyan.shopping.service.IHomeService;
 import com.cskaoyan.shopping.service.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +23,10 @@ import java.util.Map;
 @RequestMapping("shopping")
 public class ShoppingController {
     @Autowired
+    IHomeService service;
+
+    @Autowired
+    ICartService cartService;
     IHomeService iHomeService;
     @Autowired
     IContentService iContentService;
@@ -35,7 +43,7 @@ public class ShoppingController {
         ProductDetailRequest request = new ProductDetailRequest();
         request.setId(productId);
         ProductDetailResponse productDetail = iProductService.getProductDetail(request);
-        
+
         if (ShoppingRetCode.SUCCESS.getCode().equals(productDetail.getCode())) {
             return new ResponseUtil().setData(productDetail.getProductDetailDto());
         }
@@ -87,6 +95,16 @@ public class ShoppingController {
             return new ResponseUtil().setData(homePageResponse.getPanelContentItemDtos());
         }
         return new ResponseUtil().setErrorMsg(homePageResponse.getMsg());
+    }
+
+    @PostMapping("carts")
+    public ResponseData addToCarts(@RequestBody AddCartRequest request){
+        AddCartResponse addCartResponse = cartService.addToCart(request);
+        if(ShoppingRetCode.SUCCESS.getCode().equals(addCartResponse.getCode())){
+            return new ResponseUtil().setData(addCartResponse.getAddCartResultItemDtos());
+        }
+        return new ResponseUtil().setErrorMsg(addCartResponse.getMsg());
+
     }
 
     /**
