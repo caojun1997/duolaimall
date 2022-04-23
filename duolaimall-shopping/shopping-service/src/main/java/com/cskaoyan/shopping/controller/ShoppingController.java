@@ -31,7 +31,6 @@ public class ShoppingController {
     IContentService iContentService;
 
 
-
     @Autowired
     IProductService iProductService;
 
@@ -40,7 +39,7 @@ public class ShoppingController {
      * @author zwy
      * @date 2022/4/22 19:41
      */
-    @GetMapping("/shopping/product/{id}")
+    @GetMapping("/product/{id}")
     public ResponseData getProductDetail(@PathVariable("id") Long productId) {//@PathVariable注解 接收请求参数中占位符的值
         ProductDetailRequest request = new ProductDetailRequest();
         request.setId(productId);
@@ -57,7 +56,7 @@ public class ShoppingController {
      * @author zwy
      * @date 2022/4/22 22:30
      */
-    @GetMapping("/shopping/recommend")
+    @GetMapping("/recommend")
     public ResponseData getRecommendGoods() {
 
         RecommendResponse recommendResponse = iProductService.getRecommendGoods();
@@ -72,7 +71,7 @@ public class ShoppingController {
      * @author zwy
      * @date 2022/4/23 10:34
      */
-    @GetMapping("/shopping/goods")
+    @GetMapping("/goods")
     public ResponseData getAllProduct(AllProductRequest request) {
 
         AllProductResponse allProductResponse = iProductService.getAllProduct(request);
@@ -82,6 +81,19 @@ public class ShoppingController {
         }
         return new ResponseUtil().setErrorMsg(allProductResponse.getMsg());
     }
+
+
+    @PostMapping("carts")
+    public ResponseData addToCarts(@RequestBody AddCartRequest request) {
+        AddCartResponse addCartResponse = icartService.addToCart(request);
+        if (ShoppingRetCode.SUCCESS.getCode().equals(addCartResponse.getCode())) {
+            return new ResponseUtil().setData(addCartResponse.getAddCartResultItemDtos());
+        }
+        return new ResponseUtil().setErrorMsg(addCartResponse.getMsg());
+
+    }
+
+
     /**
      * cao jun
      * 2022年4月22日23:32:37
@@ -122,62 +134,5 @@ public class ShoppingController {
         return new ResponseUtil().setErrorMsg(homePageResponse.getMsg());
     }
 
-    @PostMapping("carts")
-    public ResponseData addToCarts(@RequestBody AddCartRequest request){
-        AddCartResponse addCartResponse = icartService.addToCart(request);
-        if(ShoppingRetCode.SUCCESS.getCode().equals(addCartResponse.getCode())){
-            return new ResponseUtil().setData(addCartResponse.getAddCartResultItemDtos());
-        }
-        return new ResponseUtil().setErrorMsg(addCartResponse.getMsg());
 
-    }
-
-
-
-
-
-
-//    /**
-//     * cao jun
-//     * 2022年4月23日09:03:25
-//     * 购物车的获取商品列表
-//     */
-//    @GetMapping("cart")
-//    public ResponseData cart(@RequestBody Map param) {
-//
-//        Integer userId = (Integer) param.get("userId");
-//        Integer productNum = (Integer) param.get("productNum");
-//        Integer productId = (Integer) param.get("productId");
-//        Integer checked = (Integer) param.get("checked");
-//        if (userId != null && productId != null && productNum != null && checked != null) {
-//            // 更新购物车商品
-//            UpdateCartNumRequest updateCartNumRequest = new UpdateCartNumRequest();
-//            iCartService.updateCartNum(updateCartNumRequest);
-//
-//        }
-//        if (userId != null && productId != null && productNum != null && checked == null) {
-//            // 加入购物车
-//            AddCartRequest addCartRequest = new AddCartRequest();
-//            addCartRequest.setUserId(Long.valueOf(userId));
-//            addCartRequest.setItemId(Long.valueOf(productId));
-//            addCartRequest.setNum(productNum);
-//            AddCartResponse addCartResponse = iCartService.addToCart(addCartRequest);
-//
-//
-//        }
-//        if (userId != null && productId == null && productNum == null && checked == null) {
-//            // 获得购物车商品列表
-//            CartListByIdRequest cartListByIdRequest = new CartListByIdRequest();
-//            cartListByIdRequest.setUserId(Long.valueOf(userId));
-//            CartListByIdResponse cartListByIdResponse = iCartService.getCartListById(cartListByIdRequest);
-//            if (ShoppingRetCode.SUCCESS.getCode().equals(cartListByIdResponse.getCode())) {
-//                return new ResponseUtil().setData(cartListByIdResponse.getCartProductDtos());
-//            } else {
-//                return new ResponseUtil().setErrorMsg(Integer.valueOf(cartListByIdResponse.getCode()), cartListByIdResponse.getMsg());
-//            }
-//        }
-//
-//        // 上面流程错误说明都没成功返回一个系统错误
-//        return new ResponseUtil().setErrorMsg(Integer.valueOf(ShoppingRetCode.SYSTEM_ERROR.getCode()), ShoppingRetCode.SYSTEM_ERROR.getMessage());
-//    }
 }

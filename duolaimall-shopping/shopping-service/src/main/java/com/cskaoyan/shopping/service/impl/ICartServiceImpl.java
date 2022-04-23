@@ -27,7 +27,7 @@ import java.util.HashMap;
 @Service
 public class ICartServiceImpl implements ICartService {
 
-    @@Autowired
+    @Autowired
     RedissonClient redissonClient;
 
     @Autowired
@@ -73,7 +73,6 @@ public class ICartServiceImpl implements ICartService {
         config.useSingleServer().setAddress("redis://192.168.7.4:6379");
         RedissonClient redissonClient = Redisson.create(config);
         RMap<Long,CartProductDto> map =redissonClient.getMap(userId);
-        map.put
         return null;
     }
 
