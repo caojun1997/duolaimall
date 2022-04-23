@@ -28,6 +28,7 @@ public class ShoppingController {
     /**
      * cao jun
      * 2022年4月22日16:57:20
+     * 首页显示分类商品
      */
     @GetMapping("homepage")
     public ResponseData homepage() {
@@ -42,6 +43,7 @@ public class ShoppingController {
     /**
      * cao jun
      * 2022年4月22日23:32:37
+     * 首页的导航栏
      */
     @GetMapping("navigation")
     public ResponseData navigation() {
@@ -70,6 +72,7 @@ public class ShoppingController {
     /**
      * cao jun
      * 2022年4月23日09:03:25
+     * 购物车的获取商品列表
      */
     @GetMapping("cart")
     public ResponseData cart(@RequestBody Map param) {
@@ -99,13 +102,14 @@ public class ShoppingController {
             CartListByIdRequest cartListByIdRequest = new CartListByIdRequest();
             cartListByIdRequest.setUserId(Long.valueOf(userId));
             CartListByIdResponse cartListByIdResponse = iCartService.getCartListById(cartListByIdRequest);
-            if (ShoppingRetCode.SUCCESS.getCode().equals(cartListByIdResponse.getCode())){
-
+            if (ShoppingRetCode.SUCCESS.getCode().equals(cartListByIdResponse.getCode())) {
+                return new ResponseUtil().setData(cartListByIdResponse.getCartProductDtos());
+            } else {
+                return new ResponseUtil().setErrorMsg(Integer.valueOf(cartListByIdResponse.getCode()), cartListByIdResponse.getMsg());
             }
-
         }
 
-
-        return null;
+         // 上面流程错误说明都没成功返回一个系统错误
+        return new ResponseUtil().setErrorMsg(Integer.valueOf(ShoppingRetCode.SYSTEM_ERROR.getCode()), ShoppingRetCode.SYSTEM_ERROR.getMessage());
     }
 }
