@@ -6,7 +6,7 @@ import com.cskaoyan.shopping.dto.CartProductDto;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
 
-@Component
+
 public class CartItemConverter {
 
 
@@ -23,7 +23,7 @@ public class CartItemConverter {
             cartProduct.setLimitNum((long) 10);
         }else{
             cartProduct.setLimitNum(Long.valueOf(item.getLimitNum()));
-        }
+         }
         return cartProduct;
     }
 }

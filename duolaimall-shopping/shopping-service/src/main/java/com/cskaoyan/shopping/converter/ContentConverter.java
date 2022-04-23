@@ -41,10 +41,14 @@ public interface ContentConverter {
     @Mappings({})
     PanelDto panel2Dto(Panel panel);
 
+    List<PanelDto> panels2Dto(List<Panel> panels);
+
     List<PanelContentDto> panelContents2Dto(List<PanelContent> panelContents);
 
 
     // panelContentDto转换成PanelContentItemDto
     PanelContentItemDto panelContent2ContentDto(PanelContentDto panelContent);
+
+    PanelContentItemDto panelContentDto2PanelContentItemDto(PanelContentDto panelContentDto);
 
 }

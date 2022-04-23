@@ -19,6 +19,8 @@ public class ResponseUtil<T> {
         return this.responseData;
     }
 
+
+
     public ResponseData<T> setData(T t, String msg) {
         this.responseData.setResult(t);
         this.responseData.setSuccess(true);

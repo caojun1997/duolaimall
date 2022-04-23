@@ -1,4 +1,8 @@
-package com.cskaoyan.shopping.dto;
+package com.cskaoyan.shopping.dto;/*
+ *@Auther:强
+ *@Date: 2022/4/23 17:11
+ *@Version 1.0.0.0
+ */
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -6,11 +10,11 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-
+import java.util.Date;
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class CartProductDto implements Serializable {
+@NoArgsConstructor
+public class CartProductTimeDto implements Serializable {
     private static final long serialVersionUID = -809047960626248847L;
 
     private Long productId;
@@ -26,4 +30,7 @@ public class CartProductDto implements Serializable {
     private String productName;
 
     private String productImg;
+
+    Date cartAddTime;
+
 }
