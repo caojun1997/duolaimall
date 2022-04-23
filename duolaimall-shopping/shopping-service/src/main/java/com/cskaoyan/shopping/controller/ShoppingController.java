@@ -35,7 +35,7 @@ public class ShoppingController {
         ProductDetailRequest request = new ProductDetailRequest();
         request.setId(productId);
         ProductDetailResponse productDetail = iProductService.getProductDetail(request);
-
+        
         if (ShoppingRetCode.SUCCESS.getCode().equals(productDetail.getCode())) {
             return new ResponseUtil().setData(productDetail.getProductDetailDto());
         }
@@ -51,7 +51,6 @@ public class ShoppingController {
     public ResponseData getRecommendGoods() {
 
         RecommendResponse recommendResponse = iProductService.getRecommendGoods();
-
         if (ShoppingRetCode.SUCCESS.getCode().equals(recommendResponse.getCode())) {
             return new ResponseUtil().setData(recommendResponse.getPanelFinalDtos());
         }
@@ -67,9 +66,8 @@ public class ShoppingController {
     public ResponseData getAllProduct(AllProductRequest request) {
 
         AllProductResponse allProductResponse = iProductService.getAllProduct(request);
-
         if (ShoppingRetCode.SUCCESS.getCode().equals(allProductResponse.getCode())) {
-            new ResponseUtil().setData(allProductResponse);
+            return new ResponseUtil().setData(allProductResponse);
 
         }
         return new ResponseUtil().setErrorMsg(allProductResponse.getMsg());
@@ -160,7 +158,7 @@ public class ShoppingController {
             }
         }
 
-         // 上面流程错误说明都没成功返回一个系统错误
+        // 上面流程错误说明都没成功返回一个系统错误
         return new ResponseUtil().setErrorMsg(Integer.valueOf(ShoppingRetCode.SYSTEM_ERROR.getCode()), ShoppingRetCode.SYSTEM_ERROR.getMessage());
     }
 }
