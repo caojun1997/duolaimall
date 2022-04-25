@@ -66,6 +66,11 @@ public class UserServiceImpl implements IUserService {
             return userLoginResponse;
         }
         Member member = members.get(0);
+        if ("N".equals(member.getIsVerified())) {
+            userLoginResponse.setCode(UserRetCode.USER_ISVERFIED_ERROR.getCode());
+            userLoginResponse.setMsg(UserRetCode.USER_ISVERFIED_ERROR.getMessage());
+            return userLoginResponse;
+        }
         UserLoginResponse responseConverter = userConverterMapper.converter(member);
 
         String token = JwtTokenUtils.builder().msg(member.getUsername()).build().creatJwtToken();

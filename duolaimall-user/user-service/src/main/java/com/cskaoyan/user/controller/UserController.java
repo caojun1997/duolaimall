@@ -80,6 +80,9 @@ public class UserController {
         if (UserRetCode.USERORPASSWORD_ERRROR.getCode().equals(userLoginResponse.getCode())) {
             return new ResponseUtil<>().setErrorMsg(UserRetCode.USERORPASSWORD_ERRROR.getMessage());
         }
+        if (UserRetCode.USER_ISVERFIED_ERROR.getCode().equals(userLoginResponse.getCode())) {
+            return new ResponseUtil<>().setErrorMsg(UserRetCode.USER_ISVERFIED_ERROR.getMessage());
+        }
 
         return new ResponseUtil<>().setData(userLoginResponse);
     }
@@ -114,7 +117,7 @@ public class UserController {
     }
 
     @RequestMapping("loginOut")
-    public ResponseData logout(HttpServletRequest request,HttpServletResponse response) {
+    public ResponseData logout(HttpServletRequest request, HttpServletResponse response) {
         Cookie[] cookies = request.getCookies();
         for (Cookie cookie : cookies) {
             if ("access_token".equals(cookie.getName())) {
