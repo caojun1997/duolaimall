@@ -94,7 +94,10 @@ public class ShoppingController {
 
         AllProductResponse allProductResponse = iProductService.getAllProduct(request);
         if (ShoppingRetCode.SUCCESS.getCode().equals(allProductResponse.getCode())) {
-            return new ResponseUtil().setData(allProductResponse);
+            AllProductResponse2 allProductResponse2 = new AllProductResponse2();
+            allProductResponse2.setProductDtoList(allProductResponse.getProductDtoList());
+            allProductResponse2.setTotal(allProductResponse.getTotal());
+            return new ResponseUtil().setData(allProductResponse2);
 
         }
         return new ResponseUtil().setErrorMsg(allProductResponse.getMsg());

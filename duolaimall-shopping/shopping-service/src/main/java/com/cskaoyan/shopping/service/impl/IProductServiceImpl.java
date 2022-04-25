@@ -75,6 +75,8 @@ public class IProductServiceImpl implements IProductService {
         return productDetailResponse;
     }
 
+
+
     @Override
     public AllProductResponse getAllProduct(AllProductRequest request) {
         AllProductResponse allProductResponse = new AllProductResponse();
@@ -116,9 +118,10 @@ public class IProductServiceImpl implements IProductService {
             long total = pageInfo.getTotal();
 
             allProductResponse.setCode(ShoppingRetCode.SUCCESS.getCode());
+            allProductResponse.setMsg(ShoppingRetCode.SUCCESS.getMessage());
             allProductResponse.setProductDtoList(productDtos);
             allProductResponse.setTotal(total);
-            allProductResponse.setMsg(ShoppingRetCode.SUCCESS.getMessage());
+
 
         } catch (Exception e) {
             e.printStackTrace();
