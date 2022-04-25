@@ -123,8 +123,9 @@ public class UserServiceImpl implements IUserService {
         }
 
         // 3.向用户表中插入一条记录
+        Member member;
         try {
-            Member member = new Member();
+            member = new Member();
             member.setUsername(userRegisterRequest.getUserName());
             AESUtil aesUtil = new AESUtil(userRegisterRequest.getUserPwd());
             String encrypt = aesUtil.encrypt();
@@ -165,7 +166,7 @@ public class UserServiceImpl implements IUserService {
             + userRegisterRequest.getUserName();
         simpleMailMessage.setText(url);
         simpleMailMessage.setFrom("op027@qq.com");
-        simpleMailMessage.setTo("1534797013@qq.com");
+        simpleMailMessage.setTo(member.getEmail());
 
         mailSender.send(simpleMailMessage);
 
