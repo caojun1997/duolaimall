@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 public class AllProductResponse2 {
 
-    private List<ProductDto> productDtoList;
+    private List<ProductDto> data;
 
     private Long total;
 }
