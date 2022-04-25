@@ -7,11 +7,11 @@ spring:
     nacos:
       discovery:
         server-addr: 127.0.0.1:8848
-        ip: 192.168.7.4
+        ip: 192.168.2.5
   main:
     allow-bean-definition-overriding: true
   datasource:
-    url: jdbc:mysql://127.0.0.1:3386/project3?useUnicode=true&characterEncoding=utf8&useOldAliasMetadataBehavior=true&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&serverTimezone=UTC
+    url: jdbc:mysql://192.168.2.5:3306/project3?useUnicode=true&characterEncoding=utf8&useOldAliasMetadataBehavior=true&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&serverTimezone=UTC
     username: root
     password: 123456
     driver-class-name: com.mysql.cj.jdbc.Driver

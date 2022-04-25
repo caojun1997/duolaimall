@@ -114,11 +114,12 @@ public class UserController {
     }
 
     @RequestMapping("loginOut")
-    public ResponseData logout(HttpServletRequest request) {
+    public ResponseData logout(HttpServletRequest request,HttpServletResponse response) {
         Cookie[] cookies = request.getCookies();
         for (Cookie cookie : cookies) {
             if ("access_token".equals(cookie.getName())) {
-                cookie.setValue(null);
+                Cookie genCookie = CookieUtil.genCookie("access_token", null, "/", 0);
+                response.addCookie(genCookie);
             }
         }
         ResponseUtil responseUtil = new ResponseUtil();
