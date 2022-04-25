@@ -3,10 +3,8 @@ package com.cskaoyan.shopping.service.impl;
 import com.cskaoyan.mall.constant.ShoppingRetCode;
 import com.cskaoyan.mall.dto.*;
 import com.cskaoyan.shopping.converter.*;
-import com.cskaoyan.shopping.dal.entitys.Item;
-import com.cskaoyan.shopping.dal.entitys.Panel;
-import com.cskaoyan.shopping.dal.entitys.PanelContent;
-import com.cskaoyan.shopping.dal.entitys.PanelContentItem;
+import com.cskaoyan.shopping.dal.entitys.*;
+import com.cskaoyan.shopping.dal.persistence.ItemDescMapper;
 import com.cskaoyan.shopping.dal.persistence.ItemMapper;
 import com.cskaoyan.shopping.dal.persistence.PanelContentMapper;
 import com.cskaoyan.shopping.dal.persistence.PanelMapper;
@@ -34,6 +32,8 @@ public class IProductServiceImpl implements IProductService {
     PanelMapper panelMapper;
     @Autowired
     PanelContentMapper panelContentMapper;
+    @Autowired
+    ItemDescMapper itemDescMapper;
 
     @Autowired
     ProductDetailConverter productDetailConverter;
@@ -54,7 +54,9 @@ public class IProductServiceImpl implements IProductService {
         try {
             request.requestCheck();
             Item item = itemMapper.selectByPrimaryKey(request.getId());
+            ItemDesc itemDesc = itemDescMapper.selectByPrimaryKey(request.getId());
             ProductDetailDto productDetailDto = productDetailConverter.item2ProductDetailDto(item);
+            productDetailDto.setDetail(itemDesc.getItemDesc());
             String image = item.getImage();
             if (image != null && !"".equals(image)) {
                 List<String> smallImages = Arrays.asList(image.split(","));
@@ -74,7 +76,6 @@ public class IProductServiceImpl implements IProductService {
 
         return productDetailResponse;
     }
-
 
 
     @Override
