@@ -47,6 +47,7 @@ public class IProductServiceImpl implements IProductService {
      * @author zwy
      * @date 2022/4/22 21:11
      */
+    //查看商品详情
     @Override
     public ProductDetailResponse getProductDetail(ProductDetailRequest request) {
 
@@ -78,6 +79,7 @@ public class IProductServiceImpl implements IProductService {
     }
 
 
+    //分页查询商品列表
     @Override
     public AllProductResponse getAllProduct(AllProductRequest request) {
         AllProductResponse allProductResponse = new AllProductResponse();
@@ -91,8 +93,10 @@ public class IProductServiceImpl implements IProductService {
         Long cid = request.getCid();//类目
         if (page != null && size != null) {
             PageHelper.startPage(page, size);//分页插件
+        } else {
+            page = 1;
+            size = 0;
         }
-
 
         try {
             Example example = new Example(Item.class);
@@ -101,9 +105,19 @@ public class IProductServiceImpl implements IProductService {
             if (cid != null && cid.longValue() != 0) {
                 criteria.andEqualTo("cid", cid);
             }
+
             if (sort != null && sort.length() != 0) {
-                example.setOrderByClause(sort + " id");//默认order是id字段
+                //get请求参数中sort=1表示价格从低到高排序 升序
+                if ("1".equals(sort)) {
+                    example.setOrderByClause("price ASC");
+                } else if ("-1".equals(sort)) {
+                    example.setOrderByClause("price DESC");
+                }
             }
+            if (sort == null && sort.length() == 0) {
+                example.setOrderByClause("id ASC");//综合排序 按照商品id升序
+            }
+
             //如果传入最低价格和最高价格
             if (priceGt != null) {
                 criteria.andGreaterThanOrEqualTo("price", priceGt);
@@ -112,10 +126,12 @@ public class IProductServiceImpl implements IProductService {
                 criteria.andLessThanOrEqualTo("price", priceLte);
             }
 
+            //从数据库中查询符合条件的商品
             List<Item> items = itemMapper.selectByExample(example);
+
             List<ProductDto> productDtos = productConverter.items2Dto(items);
 
-            PageInfo<ProductDto> pageInfo = new PageInfo<>(productDtos);
+            PageInfo<Item> pageInfo = new PageInfo<>(items);
             long total = pageInfo.getTotal();
 
             allProductResponse.setCode(ShoppingRetCode.SUCCESS.getCode());
@@ -134,6 +150,7 @@ public class IProductServiceImpl implements IProductService {
     }
 
 
+    //查询推荐商品
     @Override
     public RecommendResponse getRecommendGoods() {
 
