@@ -2,7 +2,7 @@ server:
   port: 8101
 spring:
   profiles:
-    active: devcaojun
+    active: dev
 mybatis:
   mapper-locations: classpath*:com.cskaoyan.user.dal/persistence/*Mapper.xml"
   type-aliases-package: com.cskaoyan.user.dal.entitys
