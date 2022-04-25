@@ -13,6 +13,7 @@ import com.cskaoyan.shopping.dto.HomePageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 @RestController
@@ -42,8 +43,8 @@ public class ShoppingController {
      * @date 2022/4/23 17:45
      */
     @GetMapping("carts")
-    public ResponseData addToCarts() {
-        CartListByIdResponse cartListByIdResponse = icartService.getCartListById();
+    public ResponseData addToCarts(HttpServletRequest request) {
+        CartListByIdResponse cartListByIdResponse = icartService.getCartListById(request);
         if (ShoppingRetCode.SUCCESS.getCode().equals(cartListByIdResponse.getCode())) {
             return new ResponseUtil().setData(cartListByIdResponse.getCartProductDtos());
         }
@@ -93,7 +94,10 @@ public class ShoppingController {
 
         AllProductResponse allProductResponse = iProductService.getAllProduct(request);
         if (ShoppingRetCode.SUCCESS.getCode().equals(allProductResponse.getCode())) {
-            return new ResponseUtil().setData(allProductResponse);
+            AllProductResponse2 allProductResponse2 = new AllProductResponse2();
+            allProductResponse2.setData(allProductResponse.getProductDtoList());
+            allProductResponse2.setTotal(allProductResponse.getTotal());
+            return new ResponseUtil().setData(allProductResponse2);
 
         }
         return new ResponseUtil().setErrorMsg(allProductResponse.getMsg());

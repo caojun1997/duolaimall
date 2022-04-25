@@ -4,13 +4,18 @@ package com.cskaoyan.shopping.service.impl;/*
  *@Version 1.0.0.0
  */
 
+import com.cskaoyan.mall.commons.util.CookieUtil;
+import com.cskaoyan.mall.commons.util.jwt.JwtTokenUtils;
 import com.cskaoyan.mall.constant.ShoppingRetCode;
 import com.cskaoyan.mall.dto.ClearCartItemRequest;
 import com.cskaoyan.mall.dto.ClearCartItemResponse;
 import com.cskaoyan.shopping.converter.ProductConverter;
 import com.cskaoyan.shopping.dal.entitys.Item;
+import com.cskaoyan.shopping.dal.entitys.Member;
 import com.cskaoyan.shopping.dal.persistence.ItemCatMapper;
 import com.cskaoyan.shopping.dal.persistence.ItemMapper;
+
+import com.cskaoyan.shopping.dal.persistence.MemberMapper;
 import com.cskaoyan.shopping.dto.*;
 import com.cskaoyan.shopping.service.ICartService;
 import org.redisson.Redisson;
@@ -19,7 +24,9 @@ import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tk.mybatis.mapper.entity.Example;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 @Service
@@ -35,12 +42,49 @@ public class ICartServiceImpl implements ICartService {
     ItemMapper itemMapper;
 
     @Autowired
+    MemberMapper memberMapper;
+
+    @Autowired
     ProductConverter productConverter;
 
 
+    /**
+     * @author zwy
+     * @date 2022/4/23 11:42
+     */
+
     @Override
-    public CartListByIdResponse getCartListById() {
-        RMap<String, CartProductTimeDto> map = redissonClient.getMap("4");//利用key:userId
+    public CartListByIdResponse getCartListById(HttpServletRequest request) {
+        String access_token = CookieUtil.getCookieValue(request, "access_token");
+        CartListByIdResponse cartListByIdResponse = new CartListByIdResponse();
+        //校验
+        if (access_token == null || "".equals(access_token)) {
+            cartListByIdResponse.setMsg(ShoppingRetCode.PARAM_VALIDATE_FAILD.getMessage());
+            cartListByIdResponse.setCode(ShoppingRetCode.PARAM_VALIDATE_FAILD.getCode());
+            return cartListByIdResponse;
+        }
+
+        String freeJwt = null;
+        try {
+            freeJwt = JwtTokenUtils.builder().token(access_token).build().freeJwt();
+        } catch (Exception e) {
+            e.printStackTrace();
+            cartListByIdResponse.setMsg(ShoppingRetCode.PARAM_VALIDATE_FAILD.getMessage());
+            cartListByIdResponse.setCode(ShoppingRetCode.PARAM_VALIDATE_FAILD.getCode());
+            return cartListByIdResponse;
+        }
+
+        //userServiceImpl中的
+        Example example = new Example(Member.class);
+        example.createCriteria().andEqualTo("username", freeJwt);
+
+        List<Member> members = memberMapper.selectByExample(example);
+        Member member = members.get(0);
+        Long userId = member.getId();
+
+
+        //上面获得了当前登录用户的userId
+        RMap<String, CartProductTimeDto> map = redissonClient.getMap(String.valueOf(userId));//利用key:userId
 
         //首先从Map中获取Map中所有的Value(CartProductDto)组成的List
         Collection<CartProductTimeDto> cartProductTimeDtos = map.values();
@@ -56,12 +100,10 @@ public class ICartServiceImpl implements ICartService {
         });
 
         List<CartProductDto> cartProductDtos = productConverter.cartProductTimeDtos2Dto(timeDtos);
-        CartListByIdResponse cartListByIdResponse = new CartListByIdResponse();
 
         cartListByIdResponse.setCartProductDtos(cartProductDtos);
         return cartListByIdResponse;
     }
-
 
 
     @Override
