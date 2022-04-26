@@ -131,14 +131,74 @@ public class ICartServiceImpl implements ICartService {
     }
 
     @Override
+    public AddCartResponse addToCart(AddCartRequest request) {
+        Item item = itemMapper.selectByPrimaryKey(request.getItemId());
+        CartProducTimetDto cartProducTimetDto = new CartProducTimetDto();
+        cartProducTimetDto.setProductId(item.getId());
+        cartProducTimetDto.setProductImg(item.getImage());
+        cartProducTimetDto.setProductName(item.getTitle());
+        cartProducTimetDto.setSalePrice(item.getPrice());
+        cartProducTimetDto.setProductNum(request.getNum().longValue());
+        Date date = new Date();
+        cartProducTimetDto.setCartAddTime(date);
+
+
+        String userId = request.getUserId().toString();
+        RMap<String,CartProducTimetDto> map =redissonClient.getMap(userId);
+
+        // ArrayList<Object> objects = new ArrayList<>(map.values());
+        map.put(String.valueOf(item.getId()),cartProducTimetDto);
+        map.put(request.getUserId().toString(),cartProducTimetDto);
+        AddCartResponse addCartResponse = new AddCartResponse();
+        addCartResponse.setCode(ShoppingRetCode.SUCCESS.getCode());
+        addCartResponse.setMsg(ShoppingRetCode.SUCCESS.getMessage());
+        addCartResponse.setAddCartResultItemDtos(cartProducTimetDto);
+        return addCartResponse;
+    }
+
+    @Override
     public UpdateCartNumResponse updateCartNum(UpdateCartNumRequest request) {
         String userId = request.getUserId().toString();
         Long num = request.getNum().longValue();
-        Config config = new Config();
-        config.useSingleServer().setAddress("redis://192.168.7.4:6379");
-        RedissonClient redissonClient = Redisson.create(config);
-        RMap<Long, CartProductDto> map = redissonClient.getMap(userId);
-        return null;
+        RMap<Long,CartProducTimetDto> map =redissonClient.getMap(userId);
+        CartProducTimetDto cartProducTimetDto = new CartProducTimetDto();
+        Long itemId = request.getItemId();
+        cartProducTimetDto = map.get(itemId);
+        cartProducTimetDto.setProductNum(num);
+        map.put(itemId,cartProducTimetDto);
+        UpdateCartNumResponse updateCartNumResponse = new UpdateCartNumResponse();
+        updateCartNumResponse.setCode(ShoppingRetCode.SUCCESS.getCode());
+        updateCartNumResponse.setMsg(ShoppingRetCode.SUCCESS.getMessage());
+        updateCartNumResponse.setCartProducTimetDto(cartProducTimetDto);
+        return updateCartNumResponse;
+    }
+    
+    @Override
+    public DeleteCartItemResponse deleteCartItem(DeleteCartItemRequest request) {
+        String userId = request.getUserId().toString();
+        Long itemId = request.getItemId();
+        RMap<Long,CartProducTimetDto> map =redissonClient.getMap(userId);
+        map.remove(itemId);
+        DeleteCartItemResponse deleteCartItemResponse = new DeleteCartItemResponse();
+        deleteCartItemResponse.setCode(ShoppingRetCode.SUCCESS.getCode());
+        deleteCartItemResponse.setMsg(ShoppingRetCode.SUCCESS.getMessage());
+        deleteCartItemResponse.setStatus("成功");
+        return deleteCartItemResponse;
+    }
+
+    @Override
+    public DeleteCheckedItemResposne deleteCheckedItem(DeleteCheckedItemRequest request) {
+        String userId = request.getUserId().toString();
+        RMap<Long,CartProducTimetDto> map =redissonClient.getMap(userId);
+        Iterator<Long> iterator = map.keySet().iterator();
+        String key = iterator.next().toString();
+        if(map.get(key).getChecked().equals("false")){
+            map.remove(key);
+        }
+        DeleteCheckedItemResposne deleteCheckedItemResposne = new DeleteCheckedItemResposne();
+        deleteCheckedItemResposne.setCode(ShoppingRetCode.SUCCESS.getCode());
+        deleteCheckedItemResposne.setMsg(ShoppingRetCode.SUCCESS.getMessage());
+        return deleteCheckedItemResposne;
     }
 
     @Override
