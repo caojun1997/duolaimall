@@ -54,9 +54,7 @@ public class UserController {
             e.printStackTrace();
             return new ResponseUtil<>().setErrorMsg(UserRetCode.TOKEN_VALID_FAILED.getMessage());
         }
-
         UserLoginVO login = userService.getLogin(freeJwt);
-
         return new ResponseUtil<>().setData(login);
     }
 

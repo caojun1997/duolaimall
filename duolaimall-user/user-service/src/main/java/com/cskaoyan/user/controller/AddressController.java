@@ -17,22 +17,22 @@ import javax.servlet.http.HttpServletRequest;
 
 @Slf4j
 @RestController
-@RequestMapping("/shopping")
+@RequestMapping("shopping")
 public class AddressController {
 
     @Autowired
-   IAddressService addressService;
+    IAddressService addressService;
 
     /**
      * 获取当前用户的地址列表
      *
      * @return
      */
-    @GetMapping("/addresses")
+    @GetMapping("addresses")
     public ResponseData addressList(HttpServletRequest request) {
-        String userInfo = (String) request.getHeader("user_info");
+        String userInfo = (String)request.getHeader("user_info");
         JSONObject object = JSON.parseObject(userInfo);
-        Long uid = Long.parseLong(object.get("uid").toString());
+        Long uid = Long.parseLong(object.get("id").toString());
         AddressListRequest addressListRequest = new AddressListRequest();
         addressListRequest.setUserId(uid);
         AddressListResponse response = addressService.addressList(addressListRequest);
@@ -42,16 +42,17 @@ public class AddressController {
         return new ResponseUtil().setErrorMsg(response.getMsg());
     }
 
-    @PostMapping("/addresses")
-    public ResponseData addressAdd(@RequestBody AddressForm form,
-                           HttpServletRequest servletRequest) {
-        log.debug(form.is_Default()+"");
+    @PostMapping("addresses")
+    public ResponseData addressAdd(@RequestBody AddressForm form, HttpServletRequest servletRequest) {
+        log.debug(form.is_Default() + "");
         log.debug(form.toString());
 
         AddAddressRequest request = new AddAddressRequest();
-        String userInfo = (String) servletRequest.getHeader("user_info");
+        String userInfo = (String)servletRequest.getHeader("user_info");
+
         JSONObject object = JSON.parseObject(userInfo);
-        Long uid = Long.parseLong(object.get("uid").toString());
+        Long uid = Long.parseLong(object.get("id").toString());
+
         request.setUserId(uid);
         request.setUserName(form.getUserName());
         request.setStreetName(form.getStreetName());
@@ -65,7 +66,7 @@ public class AddressController {
         return new ResponseUtil().setErrorMsg(response.getMsg());
     }
 
-    @DeleteMapping("/addresses/{addressid}")
+    @DeleteMapping("addresses/{addressid}")
     public ResponseData addressDel(@PathVariable("addressid") Long addressid) {
         DeleteAddressRequest request = new DeleteAddressRequest();
         request.setAddressId(addressid);
@@ -78,13 +79,12 @@ public class AddressController {
 
     }
 
-    @PutMapping("/addresses")
-    public ResponseData addressUpdate(@RequestBody AddressForm form,
-                              HttpServletRequest servletRequest) {
+    @PutMapping("addresses")
+    public ResponseData addressUpdate(@RequestBody AddressForm form, HttpServletRequest servletRequest) {
         UpdateAddressRequest request = new UpdateAddressRequest();
-        String userInfo = (String) servletRequest.getHeader("user_info");
+        String userInfo = (String)servletRequest.getHeader("user_info");
         JSONObject object = JSON.parseObject(userInfo);
-        Long uid = Long.parseLong(object.get("uid").toString());
+        Long uid = Long.parseLong(object.get("id").toString());
         request.setAddressId(form.getAddressId());
         request.setIsDefault(form.is_Default() ? 1 : null);
         request.setStreetName(form.getStreetName());

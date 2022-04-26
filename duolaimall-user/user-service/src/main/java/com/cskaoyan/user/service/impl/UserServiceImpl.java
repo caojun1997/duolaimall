@@ -1,5 +1,7 @@
 package com.cskaoyan.user.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.cskaoyan.mall.commons.util.CookieUtil;
 import com.cskaoyan.mall.commons.util.jwt.AESUtil;
 import com.cskaoyan.mall.commons.util.jwt.JwtTokenUtils;
@@ -72,8 +74,8 @@ public class UserServiceImpl implements IUserService {
             return userLoginResponse;
         }
         UserLoginResponse responseConverter = userConverterMapper.converter(member);
-
-        String token = JwtTokenUtils.builder().msg(member.getUsername()).build().creatJwtToken();
+        String str = JSON.toJSON(member).toString();
+        String token = JwtTokenUtils.builder().msg(str).build().creatJwtToken();
 
         Cookie cookie = CookieUtil.genCookie("access_token", token, "/", 600);
         response.addCookie(cookie);
@@ -86,13 +88,11 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public UserLoginVO getLogin(String freeJwt) {
-        Example example = new Example(Member.class);
-        example.createCriteria().andEqualTo("username", freeJwt);
 
-        List<Member> members = memberMapper.selectByExample(example);
-        Member member = members.get(0);
-        Long id = member.getId();
-        return new UserLoginVO(id, freeJwt);
+        JSONObject jsonObject = JSON.parseObject(freeJwt);
+        Long id = Long.parseLong(jsonObject.get("id").toString());
+        String username = jsonObject.get("username").toString();
+        return new UserLoginVO(id, username);
     }
 
     @Override
@@ -141,7 +141,7 @@ public class UserServiceImpl implements IUserService {
             return userRegisterResponse;
         }
 
-        // 4.向用户验证表中插入一条记录\
+        // 4.向用户验证表中插入一条记录
         UserVerify userVerify;
         try {
             userVerify = new UserVerify();
