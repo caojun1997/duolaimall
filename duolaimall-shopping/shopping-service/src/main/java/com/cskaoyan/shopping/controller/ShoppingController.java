@@ -26,7 +26,9 @@ public class ShoppingController {
     IHomeService service;
 
     @Autowired
-    ICartService cartService;
+    ICartService iCartService;
+
+    @Autowired
     IHomeService iHomeService;
     @Autowired
     IContentService iContentService;
@@ -99,7 +101,7 @@ public class ShoppingController {
 
     @PostMapping("carts")
     public ResponseData addToCarts(@RequestBody AddCartRequest request){
-        AddCartResponse addCartResponse = cartService.addToCart(request);
+        AddCartResponse addCartResponse = iCartService.addToCart(request);
         if(ShoppingRetCode.SUCCESS.getCode().equals(addCartResponse.getCode())){
             return new ResponseUtil().setData(addCartResponse.getAddCartResultItemDtos());
         }
@@ -107,6 +109,37 @@ public class ShoppingController {
 
     }
 
+    @PutMapping("carts")
+    public ResponseData updateCarts(@RequestBody UpdateCartNumRequest request){
+        UpdateCartNumResponse updateCartNumResponse = iCartService.updateCartNum(request);
+        if(ShoppingRetCode.SUCCESS.getCode().equals(updateCartNumResponse.getCode())){
+            return new ResponseUtil().setData(updateCartNumResponse.getCartProducTimetDto());
+        }
+        return new ResponseUtil().setErrorMsg(updateCartNumResponse.getMsg());
+
+    }
+
+    @DeleteMapping("carts")
+    public ResponseData deleteCart(DeleteCartItemRequest request){
+        DeleteCartItemResponse deleteCartItemResponse = iCartService.deleteCartItem(request);
+        if(ShoppingRetCode.SUCCESS.getCode().equals(deleteCartItemResponse.getCode())){
+            return new ResponseUtil().setData(deleteCartItemResponse.getStatus());
+        }
+        return new ResponseUtil().setErrorMsg(deleteCartItemResponse.getMsg());
+    }
+
+
+    @DeleteMapping("items")
+    public ResponseData deleteCheckedCartItems(DeleteCheckedItemRequest request){
+        DeleteCheckedItemResposne deleteCheckedItemResposne = iCartService.deleteCheckedItem(request);
+        CartListByIdRequest cartListByIdRequest = new CartListByIdRequest();
+        cartListByIdRequest.setUserId(request.getUserId());
+        iCartService.getCartListById(cartListByIdRequest);
+        if(ShoppingRetCode.SUCCESS.getCode().equals(deleteCheckedItemResposne.getCode())){
+            return new ResponseUtil().setData(deleteCheckedItemResposne.getStatus());
+        }
+        return new ResponseUtil().setErrorMsg(deleteCheckedItemResposne.getMsg());
+    }
     /**
      * cao jun
      * 2022年4月22日23:32:37
@@ -133,8 +166,7 @@ public class ShoppingController {
     }
 
 
-    @Autowired
-    ICartService iCartService;
+
 
     /**
      * cao jun
