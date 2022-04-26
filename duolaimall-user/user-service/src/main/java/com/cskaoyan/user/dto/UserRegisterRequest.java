@@ -13,10 +13,11 @@ public class UserRegisterRequest extends AbstractRequest {
     private String userPwd;
     private String email;
 
-//    @Override
+    @Override
     public void requestCheck() {
-        if(StringUtils.isBlank(userName)|| StringUtils.isBlank(userPwd)){
-            throw new ValidateException(UserRetCode.REQUEST_CHECK_FAILURE.getCode(), UserRetCode.REQUEST_CHECK_FAILURE.getMessage());
+        if (StringUtils.isBlank(userName) || StringUtils.isBlank(userPwd)) {
+            throw new ValidateException(UserRetCode.REQUEST_CHECK_FAILURE.getCode(),
+                UserRetCode.REQUEST_CHECK_FAILURE.getMessage());
         }
     }
 }

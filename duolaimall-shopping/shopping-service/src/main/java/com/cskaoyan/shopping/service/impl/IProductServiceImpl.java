@@ -3,10 +3,8 @@ package com.cskaoyan.shopping.service.impl;
 import com.cskaoyan.mall.constant.ShoppingRetCode;
 import com.cskaoyan.mall.dto.*;
 import com.cskaoyan.shopping.converter.*;
-import com.cskaoyan.shopping.dal.entitys.Item;
-import com.cskaoyan.shopping.dal.entitys.Panel;
-import com.cskaoyan.shopping.dal.entitys.PanelContent;
-import com.cskaoyan.shopping.dal.entitys.PanelContentItem;
+import com.cskaoyan.shopping.dal.entitys.*;
+import com.cskaoyan.shopping.dal.persistence.ItemDescMapper;
 import com.cskaoyan.shopping.dal.persistence.ItemMapper;
 import com.cskaoyan.shopping.dal.persistence.PanelContentMapper;
 import com.cskaoyan.shopping.dal.persistence.PanelMapper;
@@ -34,6 +32,8 @@ public class IProductServiceImpl implements IProductService {
     PanelMapper panelMapper;
     @Autowired
     PanelContentMapper panelContentMapper;
+    @Autowired
+    ItemDescMapper itemDescMapper;
 
     @Autowired
     ProductDetailConverter productDetailConverter;
@@ -47,6 +47,7 @@ public class IProductServiceImpl implements IProductService {
      * @author zwy
      * @date 2022/4/22 21:11
      */
+    //查看商品详情
     @Override
     public ProductDetailResponse getProductDetail(ProductDetailRequest request) {
 
@@ -54,7 +55,9 @@ public class IProductServiceImpl implements IProductService {
         try {
             request.requestCheck();
             Item item = itemMapper.selectByPrimaryKey(request.getId());
+            ItemDesc itemDesc = itemDescMapper.selectByPrimaryKey(request.getId());
             ProductDetailDto productDetailDto = productDetailConverter.item2ProductDetailDto(item);
+            productDetailDto.setDetail(itemDesc.getItemDesc());
             String image = item.getImage();
             if (image != null && !"".equals(image)) {
                 List<String> smallImages = Arrays.asList(image.split(","));
@@ -75,6 +78,8 @@ public class IProductServiceImpl implements IProductService {
         return productDetailResponse;
     }
 
+
+    //分页查询商品列表
     @Override
     public AllProductResponse getAllProduct(AllProductRequest request) {
         AllProductResponse allProductResponse = new AllProductResponse();
@@ -88,8 +93,10 @@ public class IProductServiceImpl implements IProductService {
         Long cid = request.getCid();//类目
         if (page != null && size != null) {
             PageHelper.startPage(page, size);//分页插件
+        } else {
+            page = 1;
+            size = 0;
         }
-
 
         try {
             Example example = new Example(Item.class);
@@ -98,9 +105,19 @@ public class IProductServiceImpl implements IProductService {
             if (cid != null && cid.longValue() != 0) {
                 criteria.andEqualTo("cid", cid);
             }
+
             if (sort != null && sort.length() != 0) {
-                example.setOrderByClause(sort + " id");//默认order是id字段
+                //get请求参数中sort=1表示价格从低到高排序 升序
+                if ("1".equals(sort)) {
+                    example.setOrderByClause("price ASC");
+                } else if ("-1".equals(sort)) {
+                    example.setOrderByClause("price DESC");
+                }
             }
+            if (sort == null && sort.length() == 0) {
+                example.setOrderByClause("id ASC");//综合排序 按照商品id升序
+            }
+
             //如果传入最低价格和最高价格
             if (priceGt != null) {
                 criteria.andGreaterThanOrEqualTo("price", priceGt);
@@ -109,16 +126,19 @@ public class IProductServiceImpl implements IProductService {
                 criteria.andLessThanOrEqualTo("price", priceLte);
             }
 
+            //从数据库中查询符合条件的商品
             List<Item> items = itemMapper.selectByExample(example);
+
             List<ProductDto> productDtos = productConverter.items2Dto(items);
 
-            PageInfo<ProductDto> pageInfo = new PageInfo<>(productDtos);
+            PageInfo<Item> pageInfo = new PageInfo<>(items);
             long total = pageInfo.getTotal();
 
             allProductResponse.setCode(ShoppingRetCode.SUCCESS.getCode());
+            allProductResponse.setMsg(ShoppingRetCode.SUCCESS.getMessage());
             allProductResponse.setProductDtoList(productDtos);
             allProductResponse.setTotal(total);
-            allProductResponse.setMsg(ShoppingRetCode.SUCCESS.getMessage());
+
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -130,6 +150,7 @@ public class IProductServiceImpl implements IProductService {
     }
 
 
+    //查询推荐商品
     @Override
     public RecommendResponse getRecommendGoods() {
 

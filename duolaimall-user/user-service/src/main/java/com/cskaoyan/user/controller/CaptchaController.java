@@ -39,7 +39,7 @@ public class CaptchaController {
         return new ResponseUtil<>().setErrorMsg(kaptchaCodeResponse.getCode());
     }
 
-    @PostMapping("/kaptcha")
+    @PostMapping("kaptcha")
     public ResponseData validKaptchaCode(@RequestBody String code, HttpServletRequest httpServletRequest) {
         KaptchaCodeRequest request = new KaptchaCodeRequest();
         String uuid = CookieUtil.getCookieValue(httpServletRequest, "kaptcha_uuid");

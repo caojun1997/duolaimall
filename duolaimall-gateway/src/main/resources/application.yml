@@ -1,5 +1,6 @@
 server:
-  port: 8099
+  port: 8080
+#    8099
 spring:
   application:
     name: duolaimall-gateway
@@ -7,11 +8,14 @@ spring:
     allow-bean-definition-overriding: true
   cloud:
     inetutils:
- #     preferred-networks: 192.168.0
+      preferred-networks: 192.168.0
     nacos:
       discovery:
-        server-addr: 127.0.0.1:8848
-        ip: 192.168.7.31
+        #        远程服务器
+        server-addr: 123.57.77.41:8848
+        ip: 192.168.2.5
+    #       server-addr: 127.0.0.1:8848
+
     gateway:
       routes:
         - id: duolai-order

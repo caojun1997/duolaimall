@@ -6,41 +6,65 @@ import com.cskaoyan.mall.constant.ShoppingRetCode;
 import com.cskaoyan.mall.dto.ProductDetailRequest;
 import com.cskaoyan.mall.dto.ProductDetailResponse;
 import com.cskaoyan.shopping.dto.*;
-import com.cskaoyan.shopping.service.ICartService;
-import com.cskaoyan.shopping.service.IContentService;
+import com.cskaoyan.shopping.service.*;
 import com.cskaoyan.shopping.dto.AddCartRequest;
 import com.cskaoyan.shopping.dto.AddCartResponse;
 import com.cskaoyan.shopping.dto.HomePageResponse;
-import com.cskaoyan.shopping.service.ICartService;
-import com.cskaoyan.shopping.service.IHomeService;
-import com.cskaoyan.shopping.service.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 @RestController
 @RequestMapping("shopping")
 public class ShoppingController {
     @Autowired
-    IHomeService service;
+    IHomeService iHomeService;
 
     @Autowired
+<<<<<<< HEAD
     ICartService iCartService;
 
     @Autowired
     IHomeService iHomeService;
+=======
+    ICartService icartService;
+
+>>>>>>> a21952f5ca00958787c6f57c71ea40a979778c6a
     @Autowired
     IContentService iContentService;
+
     @Autowired
     IProductService iProductService;
+
+    @Autowired
+    IProductCateService iProductCateService;
+
+
+
+
+
+    /**
+     * @author zwy
+     * @date 2022/4/23 17:45
+     */
+    @GetMapping("carts")
+    public ResponseData addToCarts(HttpServletRequest request) {
+        CartListByIdResponse cartListByIdResponse = icartService.getCartListById(request);
+        if (ShoppingRetCode.SUCCESS.getCode().equals(cartListByIdResponse.getCode())) {
+            return new ResponseUtil().setData(cartListByIdResponse.getCartProductDtos());
+        }
+        return new ResponseUtil().setErrorMsg(cartListByIdResponse.getMsg());
+
+    }
 
 
     /**
      * @author zwy
      * @date 2022/4/22 19:41
      */
-    @GetMapping("/shopping/product/{id}")
+    @GetMapping("/product/{id}")
     public ResponseData getProductDetail(@PathVariable("id") Long productId) {//@PathVariable注解 接收请求参数中占位符的值
         ProductDetailRequest request = new ProductDetailRequest();
         request.setId(productId);
@@ -57,7 +81,7 @@ public class ShoppingController {
      * @author zwy
      * @date 2022/4/22 22:30
      */
-    @GetMapping("/shopping/recommend")
+    @GetMapping("/recommend")
     public ResponseData getRecommendGoods() {
 
         RecommendResponse recommendResponse = iProductService.getRecommendGoods();
@@ -72,26 +96,23 @@ public class ShoppingController {
      * @author zwy
      * @date 2022/4/23 10:34
      */
-    @GetMapping("/shopping/goods")
+    @GetMapping("/goods")
     public ResponseData getAllProduct(AllProductRequest request) {
 
         AllProductResponse allProductResponse = iProductService.getAllProduct(request);
         if (ShoppingRetCode.SUCCESS.getCode().equals(allProductResponse.getCode())) {
-            return new ResponseUtil().setData(allProductResponse);
+            AllProductResponse2 allProductResponse2 = new AllProductResponse2();
+            allProductResponse2.setData(allProductResponse.getProductDtoList());
+            allProductResponse2.setTotal(allProductResponse.getTotal());
+            return new ResponseUtil().setData(allProductResponse2);
 
         }
         return new ResponseUtil().setErrorMsg(allProductResponse.getMsg());
     }
 
 
-    /**
-     * cao jun
-     * 2022年4月22日16:57:20
-     * 首页显示分类商品
-     */
-    @GetMapping("homepage")
-    public ResponseData homepage() {
 
+<<<<<<< HEAD
         HomePageResponse homePageResponse = iHomeService.homepage();
         if (ShoppingRetCode.SUCCESS.getCode().equals(homePageResponse.getCode())) {
             return new ResponseUtil().setData(homePageResponse.getPanelContentItemDtos());
@@ -108,6 +129,8 @@ public class ShoppingController {
         return new ResponseUtil().setErrorMsg(addCartResponse.getMsg());
 
     }
+=======
+>>>>>>> a21952f5ca00958787c6f57c71ea40a979778c6a
 
     @PutMapping("carts")
     public ResponseData updateCarts(@RequestBody UpdateCartNumRequest request){
@@ -158,57 +181,38 @@ public class ShoppingController {
     /**
      * cao jun
      * 2022年4月23日09:03:03
+     * 商品分类信息
      */
     @GetMapping("categories")
-    public ResponseData categories() {
+    public ResponseData categories(AllProductCateRequest allProductCateRequest) {
+        AllProductCateResponse allProductCateResponse=iProductCateService.getAllProductCate(allProductCateRequest);
+        if (ShoppingRetCode.SUCCESS.getCode().equals(allProductCateResponse.getCode())){
+            return new ResponseUtil().setData(allProductCateResponse.getProductCateDtoList());
+        }
 
-        return null;
+        return new ResponseUtil().setErrorMsg(allProductCateResponse.getMsg());
     }
 
+<<<<<<< HEAD
 
 
 
+=======
+>>>>>>> a21952f5ca00958787c6f57c71ea40a979778c6a
     /**
      * cao jun
-     * 2022年4月23日09:03:25
-     * 购物车的获取商品列表
+     * 2022年4月22日16:57:20
+     * 首页显示分类商品
      */
-    @GetMapping("cart")
-    public ResponseData cart(@RequestBody Map param) {
+    @GetMapping("homepage")
+    public ResponseData homepage() {
 
-        Integer userId = (Integer) param.get("userId");
-        Integer productNum = (Integer) param.get("productNum");
-        Integer productId = (Integer) param.get("productId");
-        Integer checked = (Integer) param.get("checked");
-        if (userId != null && productId != null && productNum != null && checked != null) {
-            // 更新购物车商品
-            UpdateCartNumRequest updateCartNumRequest = new UpdateCartNumRequest();
-            iCartService.updateCartNum(updateCartNumRequest);
-
+        HomePageResponse homePageResponse = iHomeService.homepage();
+        if (ShoppingRetCode.SUCCESS.getCode().equals(homePageResponse.getCode())) {
+            return new ResponseUtil().setData(homePageResponse.getPanelContentItemDtos());
         }
-        if (userId != null && productId != null && productNum != null && checked == null) {
-            // 加入购物车
-            AddCartRequest addCartRequest = new AddCartRequest();
-            addCartRequest.setUserId(Long.valueOf(userId));
-            addCartRequest.setItemId(Long.valueOf(productId));
-            addCartRequest.setNum(productNum);
-            AddCartResponse addCartResponse = iCartService.addToCart(addCartRequest);
-
-
-        }
-        if (userId != null && productId == null && productNum == null && checked == null) {
-            // 获得购物车商品列表
-            CartListByIdRequest cartListByIdRequest = new CartListByIdRequest();
-            cartListByIdRequest.setUserId(Long.valueOf(userId));
-            CartListByIdResponse cartListByIdResponse = iCartService.getCartListById(cartListByIdRequest);
-            if (ShoppingRetCode.SUCCESS.getCode().equals(cartListByIdResponse.getCode())) {
-                return new ResponseUtil().setData(cartListByIdResponse.getCartProductDtos());
-            } else {
-                return new ResponseUtil().setErrorMsg(Integer.valueOf(cartListByIdResponse.getCode()), cartListByIdResponse.getMsg());
-            }
-        }
-
-        // 上面流程错误说明都没成功返回一个系统错误
-        return new ResponseUtil().setErrorMsg(Integer.valueOf(ShoppingRetCode.SYSTEM_ERROR.getCode()), ShoppingRetCode.SYSTEM_ERROR.getMessage());
+        return new ResponseUtil().setErrorMsg(homePageResponse.getMsg());
     }
+
+
 }
