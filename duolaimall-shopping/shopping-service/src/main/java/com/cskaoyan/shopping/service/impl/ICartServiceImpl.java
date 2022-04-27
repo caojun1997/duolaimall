@@ -4,6 +4,8 @@ package com.cskaoyan.shopping.service.impl;/*
  *@Version 1.0.0.0
  */
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.cskaoyan.mall.commons.util.CookieUtil;
 import com.cskaoyan.mall.commons.util.jwt.JwtTokenUtils;
 import com.cskaoyan.mall.constant.ShoppingRetCode;
@@ -54,16 +56,19 @@ public class ICartServiceImpl implements ICartService {
      */
 
     @Override
-    public CartListByIdResponse getCartListById(HttpServletRequest request) {
-        String access_token = CookieUtil.getCookieValue(request, "access_token");
+    public CartListByIdResponse getCartListById(CartListByIdRequest request) {
+
         CartListByIdResponse cartListByIdResponse = new CartListByIdResponse();
+
+/*      //参考user模块代码：
+        //版本一获取用户ID
+        String access_token = CookieUtil.getCookieValue(request, "access_token");
         //校验
         if (access_token == null || "".equals(access_token)) {
             cartListByIdResponse.setMsg(ShoppingRetCode.PARAM_VALIDATE_FAILD.getMessage());
             cartListByIdResponse.setCode(ShoppingRetCode.PARAM_VALIDATE_FAILD.getCode());
             return cartListByIdResponse;
         }
-
         String freeJwt = null;
         try {
             freeJwt = JwtTokenUtils.builder().token(access_token).build().freeJwt();
@@ -73,16 +78,15 @@ public class ICartServiceImpl implements ICartService {
             cartListByIdResponse.setCode(ShoppingRetCode.PARAM_VALIDATE_FAILD.getCode());
             return cartListByIdResponse;
         }
-
-        //userServiceImpl中的
+        //userServiceImpl中的代码参考
         Example example = new Example(Member.class);
         example.createCriteria().andEqualTo("username", freeJwt);
-
         List<Member> members = memberMapper.selectByExample(example);
         Member member = members.get(0);
-        Long userId = member.getId();
+        Long userId = member.getId();//获取用户ID*/
 
 
+        Long userId = request.getUserId();
         //上面获得了当前登录用户的userId
         RMap<String, CartProductTimeDto> map = redissonClient.getMap(String.valueOf(userId));//利用key:userId
 

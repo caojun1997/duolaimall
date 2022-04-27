@@ -8,15 +8,13 @@ import javax.servlet.http.HttpServletRequest;
 
 public interface ICartService {
 
-
     /**
+     * @author zwy
      * 获得购物车商品列表
-     *
+     * @param request
      * @return
      */
-    //CartListByIdResponse getCartListById();
-    CartListByIdResponse getCartListById(HttpServletRequest request);
-
+    CartListByIdResponse getCartListById(CartListByIdRequest request);
 
     /**
      * 添加商品到购物车

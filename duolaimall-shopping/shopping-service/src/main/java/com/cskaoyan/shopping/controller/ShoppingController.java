@@ -1,5 +1,7 @@
 package com.cskaoyan.shopping.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.cskaoyan.mall.commons.result.ResponseData;
 import com.cskaoyan.mall.commons.result.ResponseUtil;
 import com.cskaoyan.mall.constant.ShoppingRetCode;
@@ -35,16 +37,22 @@ public class ShoppingController {
     IProductCateService iProductCateService;
 
 
-
-
-
     /**
      * @author zwy
      * @date 2022/4/23 17:45
      */
     @GetMapping("carts")
-    public ResponseData addToCarts(HttpServletRequest request) {
-        CartListByIdResponse cartListByIdResponse = icartService.getCartListById(request);
+    public ResponseData getCartListById(HttpServletRequest request) {
+
+        //更简洁，版本二获取用户ID(由用户模块提供)
+        String userInfo = (String) request.getHeader("user_info");
+        JSONObject object = JSON.parseObject(userInfo);
+        Long userId = Long.parseLong(object.get("id").toString());
+
+        CartListByIdRequest cartListByIdRequest = new CartListByIdRequest();
+        cartListByIdRequest.setUserId(userId);
+
+        CartListByIdResponse cartListByIdResponse = icartService.getCartListById(cartListByIdRequest);
         if (ShoppingRetCode.SUCCESS.getCode().equals(cartListByIdResponse.getCode())) {
             return new ResponseUtil().setData(cartListByIdResponse.getCartProductDtos());
         }
@@ -104,8 +112,6 @@ public class ShoppingController {
     }
 
 
-
-
     /**
      * cao jun
      * 2022年4月22日23:32:37
@@ -128,8 +134,8 @@ public class ShoppingController {
      */
     @GetMapping("categories")
     public ResponseData categories(AllProductCateRequest allProductCateRequest) {
-        AllProductCateResponse allProductCateResponse=iProductCateService.getAllProductCate(allProductCateRequest);
-        if (ShoppingRetCode.SUCCESS.getCode().equals(allProductCateResponse.getCode())){
+        AllProductCateResponse allProductCateResponse = iProductCateService.getAllProductCate(allProductCateRequest);
+        if (ShoppingRetCode.SUCCESS.getCode().equals(allProductCateResponse.getCode())) {
             return new ResponseUtil().setData(allProductCateResponse.getProductCateDtoList());
         }
 
