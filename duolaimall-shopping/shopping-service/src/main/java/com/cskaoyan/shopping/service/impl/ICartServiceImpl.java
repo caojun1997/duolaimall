@@ -85,7 +85,7 @@ public class ICartServiceImpl implements ICartService {
         Member member = members.get(0);
         Long userId = member.getId();//获取用户ID*/
 
-
+        request.requestCheck();
         Long userId = request.getUserId();
         //上面获得了当前登录用户的userId
         RMap<String, CartProductTimeDto> map = redissonClient.getMap(String.valueOf(userId));//利用key:userId
