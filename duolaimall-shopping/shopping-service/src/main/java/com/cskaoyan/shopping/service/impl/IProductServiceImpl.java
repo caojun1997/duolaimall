@@ -163,7 +163,8 @@ public class IProductServiceImpl implements IProductService {
             List<PanelDto> panelDtos = contentConverter.panels2Dto(panels);
             //备用
             List<PanelContentItemDto> panelContentItemDtos = new ArrayList<>();
-
+            // index标注panelDtos的索引位置
+            int index = 0;
             for (Panel panel1 : panels) {
 
                 Example example1 = new Example(PanelContent.class);
@@ -190,7 +191,8 @@ public class IProductServiceImpl implements IProductService {
 
                 PanelDto panelDto = contentConverter.panel2Dto(panel1);
                 panelDto.setPanelContentItems(panelContentItemDtos);
-                panelDtos.add(panelDto);
+                panelDtos.set(index,panelDto);
+                index++;
             }
             recommendResponse.setCode(ShoppingRetCode.SUCCESS.getCode());
             recommendResponse.setPanelFinalDtos(panelDtos);
