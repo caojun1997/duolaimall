@@ -7,6 +7,7 @@ import com.cskaoyan.mall.commons.result.ResponseUtil;
 import com.cskaoyan.mall.constant.ShoppingRetCode;
 import com.cskaoyan.mall.dto.ProductDetailRequest;
 import com.cskaoyan.mall.dto.ProductDetailResponse;
+import com.cskaoyan.shopping.ParamBean.UpdateBean;
 import com.cskaoyan.shopping.dto.*;
 import com.cskaoyan.shopping.service.*;
 import com.cskaoyan.shopping.dto.AddCartRequest;
@@ -157,5 +158,69 @@ public class ShoppingController {
         return new ResponseUtil().setErrorMsg(homePageResponse.getMsg());
     }
 
+
+    /**
+     *
+     * 征远抚夷骠骑大将军
+     * 2022年4月27日 15:00:04
+     * 添加，更新，删除购物车
+     * **/
+
+    @PostMapping("carts")
+    public ResponseData addToCarts(@RequestBody Map<String,String> map,
+                                   HttpServletRequest request){
+        AddCartRequest addCartRequest = new AddCartRequest();
+        addCartRequest.setItemId(Long.parseLong(map.get("productId")));
+        addCartRequest.setNum(Integer.parseInt(map.get("productNum")));
+        addCartRequest.setUserId(Long.parseLong(map.get("userId")));
+        AddCartResponse addCartResponse = icartService.addToCart(addCartRequest);
+        if(ShoppingRetCode.SUCCESS.getCode().equals(addCartResponse.getCode())){
+            return new ResponseUtil().setData(addCartResponse.getAddCartResultItemDtos());
+        }
+        return new ResponseUtil().setErrorMsg(addCartResponse.getMsg());
+
+    }
+
+    @PutMapping("carts")
+    public ResponseData updateCarts(@RequestBody UpdateBean updateBean){
+        UpdateCartNumRequest updateCartNumRequest = new UpdateCartNumRequest();
+        updateCartNumRequest.setChecked(updateBean.getChecked());
+        updateCartNumRequest.setItemId(updateBean.getProductId());
+        updateCartNumRequest.setNum(updateBean.getProductNum());
+        updateCartNumRequest.setUserId(updateBean.getUserId());
+        UpdateCartNumResponse updateCartNumResponse = icartService.updateCartNum(updateCartNumRequest);
+        if(ShoppingRetCode.SUCCESS.getCode().equals(updateCartNumResponse.getCode())){
+            return new ResponseUtil().setData(updateCartNumResponse.getCode());
+        }
+        return new ResponseUtil().setErrorMsg(updateCartNumResponse.getMsg());
+
+    }
+
+    @DeleteMapping("carts/{userId}/{productId}")
+    public ResponseData deleteCart(@PathVariable(value = "userId") Long userId, @PathVariable(value = "productId")String productId){
+        DeleteCartItemRequest deleteCartItemRequest = new DeleteCartItemRequest();
+        deleteCartItemRequest.setItemId(Long.parseLong(productId));
+        deleteCartItemRequest.setUserId(userId);
+        DeleteCartItemResponse deleteCartItemResponse = icartService.deleteCartItem(deleteCartItemRequest);
+        if(ShoppingRetCode.SUCCESS.getCode().equals(deleteCartItemResponse.getCode())){
+            return new ResponseUtil().setData(deleteCartItemResponse.getCode());
+        }
+        return new ResponseUtil().setErrorMsg(deleteCartItemResponse.getMsg());
+    }
+
+
+    @DeleteMapping("items/{userId}")
+    public ResponseData deleteCheckedCartItems(@PathVariable(value = "userId") Long userId){
+        DeleteCheckedItemRequest deleteCheckedItemRequest = new DeleteCheckedItemRequest();
+        deleteCheckedItemRequest.setUserId(userId);
+        DeleteCheckedItemResposne deleteCheckedItemResposne = icartService.deleteCheckedItem(deleteCheckedItemRequest);
+        CartListByIdRequest cartListByIdRequest = new CartListByIdRequest();
+        cartListByIdRequest.setUserId(deleteCheckedItemRequest.getUserId());
+        icartService.getCartListById(cartListByIdRequest);
+        if(ShoppingRetCode.SUCCESS.getCode().equals(deleteCheckedItemResposne.getCode())){
+            return new ResponseUtil().setData(deleteCheckedItemResposne.getCode());
+        }
+        return new ResponseUtil().setErrorMsg(deleteCheckedItemResposne.getMsg());
+    }
 
 }

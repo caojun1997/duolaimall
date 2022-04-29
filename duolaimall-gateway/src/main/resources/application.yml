@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8099
 #    8099
 spring:
   application:
@@ -12,8 +12,8 @@ spring:
     nacos:
       discovery:
         #        远程服务器
-        server-addr: 123.57.77.41:8848
-        ip: 192.168.2.5
+        server-addr: 127.0.0.1:8848
+        ip: 192.168.2.49
     #       server-addr: 127.0.0.1:8848
 
     gateway:

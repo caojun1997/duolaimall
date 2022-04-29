@@ -12,6 +12,7 @@ public class AddCartRequest extends AbstractRequest {
     private Long userId;
     private Long itemId;
     private Integer num;
+    private CartProductTimeDto cartProductTimeDto;
 
     @Override
     public void requestCheck() {

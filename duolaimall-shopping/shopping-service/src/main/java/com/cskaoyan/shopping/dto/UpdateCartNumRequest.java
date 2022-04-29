@@ -13,6 +13,7 @@ public class UpdateCartNumRequest extends AbstractRequest {
     private Long itemId;
     private Integer num;
     private String checked;
+    private CartProductTimeDto cartProductTimeDto;
 
     @Override
     public void requestCheck() {

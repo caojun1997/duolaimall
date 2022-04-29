@@ -5,5 +5,5 @@ import lombok.Data;
 
 @Data
 public class AddCartResponse extends AbstractResponse {
-    private CartDto AddCartResultItemDtos;
+    private CartProductTimeDto AddCartResultItemDtos;
 }

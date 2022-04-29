@@ -9,6 +9,7 @@ import lombok.Data;
 public class DeleteCartItemRequest extends AbstractRequest {
     private Long userId;
     private Long itemId;
+    private String Status;
 
     @Override
     public void requestCheck() {
