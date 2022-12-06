@@ -42,7 +42,7 @@ public class JwtTokenFilter implements GlobalFilter, Ordered {
         log.info("需要认证的URL:{}",currentUrl);
         List<HttpCookie> access_token = exchange.getRequest().getCookies().get("access_token");
         if (access_token == null || access_token.size() == 0) {
-            // 没有Token
+            // 没有Token，抛出异常
             throw new GateWayException(SysRetCodeConstants.GET_TOKEN_FAILED.getCode(),
                     SysRetCodeConstants.GET_TOKEN_FAILED.getMessage());
         }
